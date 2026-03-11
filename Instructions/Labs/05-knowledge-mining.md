@@ -1,7 +1,12 @@
 ---
 lab:
-    title: 'Create a knowledge mining solution'
-    description: 'Use Azure AI Search to extract key information from documents and make it easier to search and analyze.'
+  title: Create a knowledge mining solution
+  description: Use Azure AI Search to extract key information from documents and make it easier to search and analyze.
+  duration: 40 minutes
+  level: 400
+  islab: true
+  primarytopics:
+    - Azure
 ---
 
 # Create a knowledge mining solution
