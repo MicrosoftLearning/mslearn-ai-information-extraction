@@ -1,7 +1,13 @@
 ---
 lab:
-    title: 'Extract data with Azure Document Intelligence'
-    description: 'Use prebuilt and custom Document Intelligence models to extract structured data from documents.'
+  title: Extract data with Azure Document Intelligence
+  description: Use prebuilt and custom Document Intelligence models to extract structured data from documents.
+  duration: 45 minutes
+  level: 300
+  islab: true
+  primarytopics:
+    - Azure
+    - Azure Document Intelligence
 ---
 
 # Extract data with Azure Document Intelligence
