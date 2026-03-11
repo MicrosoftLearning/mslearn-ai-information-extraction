@@ -1,7 +1,12 @@
 ---
 lab:
-    title: 'Analyze forms with custom Azure AI Document Intelligence models'
-    description: 'Create a custom Document Intelligence model to extract specific data from documents.'
+  title: Analyze forms with custom Azure AI Document Intelligence models
+  description: Create a custom Document Intelligence model to extract specific data from documents.
+  duration: 30 minutes
+  level: 300
+  islab: true
+  primarytopics:
+    - Azure
 ---
 
 # Analyze forms with custom Azure AI Document Intelligence models
