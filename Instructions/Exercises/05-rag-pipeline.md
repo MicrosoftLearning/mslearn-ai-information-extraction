@@ -115,7 +115,7 @@ You'll use Visual Studio Code as your development environment.
 1. Replace the placeholder values in the `.env` file with the credentials you gathered earlier:
     - `FOUNDRY_ENDPOINT` — Your Microsoft Foundry resource endpoint
     - `FOUNDRY_KEY` — Your Microsoft Foundry resource API key
-    - `AZURE_OPENAI_CHAT_DEPLOYMENT_NAME` — Your chat model deployment name (e.g., `gpt-4.1`)
+    - `AZURE_OPENAI_CHAT_DEPLOYMENT_NAME` — Your chat model deployment name (e.g., `gpt-4.1-######`)
     - `AZURE_OPENAI_EMBEDDING_DEPLOYMENT_NAME` — Your embedding model deployment name (e.g., `text-embedding-3-large-######`)
     - `AZURE_SEARCH_ENDPOINT` — Your Azure AI Search endpoint
     - `AZURE_SEARCH_KEY` — Your Azure AI Search admin key
