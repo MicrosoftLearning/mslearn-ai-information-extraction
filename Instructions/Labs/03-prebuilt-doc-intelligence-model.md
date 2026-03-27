@@ -1,7 +1,12 @@
 ---
 lab:
-    title: 'Analyze forms with prebuilt Azure AI Document Intelligence models'
-    description: 'Use prebuilt Azure AI Document Intelligence models to process text fields from documents.'
+  title: Analyze forms with prebuilt Azure AI Document Intelligence models
+  description: Use prebuilt Azure AI Document Intelligence models to process text fields from documents.
+  duration: 30 minutes
+  level: 200
+  islab: true
+  primarytopics:
+    - Azure
 ---
 
 # Analyze forms with prebuilt Azure AI Document Intelligence models

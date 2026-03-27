@@ -1,7 +1,12 @@
 ---
 lab:
-    title: 'Develop a Content Understanding client application'
-    description: 'Use Azure AI Content Understanding REST API to develop a client app for an analyzer.'
+  title: Develop a Content Understanding client application
+  description: Use Azure AI Content Understanding REST API to develop a client app for an analyzer.
+  duration: 30 minutes
+  level: 200
+  islab: true
+  primarytopics:
+    - Azure
 ---
 
 # Develop a Content Understanding client application

@@ -1,7 +1,12 @@
 ---
 lab:
-    title: 'Extract information from multimodal content'
-    description: 'Use Azure AI Content Understanding to extract insights from documents, images, audio recordings, and videos.'
+  title: Extract information from multimodal content
+  description: Use Azure AI Content Understanding to extract insights from documents, images, audio recordings, and videos.
+  duration: 40 minutes
+  level: 100
+  islab: true
+  primarytopics:
+    - Azure
 ---
 
 # Extract information from multimodal content
