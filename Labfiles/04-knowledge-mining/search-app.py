@@ -36,23 +36,23 @@ def main():
             # Search the index
             found_documents = search_client.search(
                 search_text=query_text,
-                select=["metadata_storage_name", "locations", "people", "keyphrases"],
-                order_by=["metadata_storage_name"],
+                select=["title", "locations", "persons", "keyPhrases"],
+                order_by=["title"],
                 include_total_count=True
             )
 
             # Parse the results
             print(f"\nSearch returned {found_documents.get_count()} documents:")
             for document in found_documents:
-                print(f"\nDocument: {document["metadata_storage_name"]}")
+                print(f"\nDocument: {document['title']}")
                 print(" - Locations:")
                 for location in document["locations"]:
                     print(f"   - {location}")
                 print(" - People:")
-                for person in document["people"]:
+                for person in document["persons"]:
                     print(f"   - {person}")
                 print(" - Key phrases:")
-                for phrase in document["keyphrases"]:
+                for phrase in document["keyPhrases"]:
                     print(f"   - {phrase}")
 
     except Exception as ex:
