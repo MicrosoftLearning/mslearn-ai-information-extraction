@@ -135,8 +135,8 @@ Now that you have an index, you can search it.
 
     ```json
     {
-      "search": "*",
-      "count": true
+        "search": "*",
+        "count": true
     }
     ```
 
@@ -146,9 +146,9 @@ Now that you have an index, you can search it.
 
     ```json
     {
-      "search": "*",
-      "count": true,
-            "select": "title,locations"
+        "search": "*",
+        "count": true,
+        "select": "title,locations"
     }
     ```
 
@@ -158,9 +158,9 @@ Now that you have an index, you can search it.
 
     ```json
     {
-      "search": "New York",
-      "count": true,
-            "select": "title,keyPhrases"
+        "search": "New York",
+        "count": true,
+        "select": "title,keyPhrases"
     }
     ```
 
