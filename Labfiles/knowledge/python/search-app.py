@@ -37,7 +37,6 @@ def main():
             found_documents = search_client.search(
                 search_text=query_text,
                 select=["title", "locations", "persons", "keyPhrases"],
-                order_by=["title"],
                 include_total_count=True
             )
 

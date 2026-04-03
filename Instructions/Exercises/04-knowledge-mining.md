@@ -93,7 +93,15 @@ Now that you have the documents in place, you can create an indexer to extract i
     - Select **Extract phrases**.
     - Select **Extract entities**, select the settings icon, ensure only **Persons** and **Locations** are selected, and then select **Save**.
     - Select **Extract text from images**, select the settings icon, ensure **Generate tags** and **Categorize content** are selected, and then select **Save**.
-    - If it isn't already selected, choose the free Foundry Tools resource option, and then select **Next**.
+    - If it isn't already selected, choose the free Foundry Tools resource option.
+    - Expand the **Save enrichments to a knowledge store** section and configure the following:
+        - **Storage account connection string**: *Select **Choose an existing connection**, select your storage account, and then select **OK**.*
+        - Select **Azure blob projections: Document**.
+        - Select **Azure table projections: Document, Key Phrases**.
+
+        > **Note**: If you do not see the **Save enrichments to a knowledge store** option, you may need to scroll down in the wizard or the option may not be available in the current Azure portal version. In that case, skip ahead to the "Search the index" section - the "View the knowledge store" section of the lab requires this configuration.
+
+    - Select **Next**.
 
     > **Note**: The free Azure AI Services enrichment for Azure AI Search can be used to index a maximum of 20 documents. In a production solution, you should create and attach an Azure AI Services resource.
 
@@ -262,7 +270,7 @@ Now that you have a useful index, you can use it from a client application. You 
     - Retrieves the configuration settings for your Azure AI Search resource and index from the configuration file you edited.
     - Creates a **SearchClient** with the endpoint, key, and index name to connect to your search service.
     - Prompts the user for a search query (until they enter "quit")
-    - Searches the index using the query, returning the following fields (ordered by title):
+    - Searches the index using the query, returning the following fields:
         - title
         - locations
         - persons
@@ -282,6 +290,8 @@ Now that you have a useful index, you can use it from a client application. You 
 1. Close the Cloud shell, returning to the Azure portal.
 
 ## View the knowledge store
+
+> **Note**: This section requires that you configured the **Save enrichments to a knowledge store** option during the "Create and run an indexer" step. If that option was not available in your Azure portal, you can skip this section.
 
 After you have run an indexer that uses a skillset to create a knowledge store, the enriched data extracted by the indexing process is persisted in the knowledge store projections.
 
