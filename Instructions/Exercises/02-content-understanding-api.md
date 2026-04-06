@@ -88,9 +88,9 @@ You'll use Visual Studio Code as your development environment.
     ```
 
 1. In the VS Code Explorer pane, open the **.env** file in the **Labfiles/02-content-understanding-api** folder.
-1. In the file, replace the **YOUR_ENDPOINT** and **YOUR_KEY** placeholders with your Microsoft Foundry resource endpoint and API key (copied from the portal tab you left open), and ensure that **ANALYZER_NAME** is set to `businesscardanalyzer`.
+1. In the file, replace the **YOUR_ENDPOINT** placeholder with your Microsoft Foundry resource endpoint and ensure that **ANALYZER_NAME** is set to `businesscardanalyzer`.
 
-    > **Tip**: You can also find the endpoint and keys in the [Azure portal](https://portal.azure.com) by navigating to your Microsoft Foundry resource and viewing **Resource Management** > **Keys and Endpoint**.
+    > **Tip**: You can also find the endpoint in the [Azure portal](https://portal.azure.com) by navigating to your Microsoft Foundry resource and viewing **Resource Management** > **Keys and Endpoint**.
 
 1. Save the file (**CTRL+S**).
 
@@ -117,7 +117,7 @@ Now you'll use the Content Understanding Python SDK to create an analyzer that c
     # Create the Content Understanding client
     client = ContentUnderstandingClient(
         endpoint=endpoint,
-        credential=AzureKeyCredential(key)
+        credential=DefaultAzureCredential()
     )
 
     # Parse the schema JSON into a ContentAnalyzer object
@@ -174,7 +174,7 @@ Now that you've created an analyzer, you can consume it from a client applicatio
     # Create the Content Understanding client
     client = ContentUnderstandingClient(
         endpoint=endpoint,
-        credential=AzureKeyCredential(key)
+        credential=DefaultAzureCredential()
     )
 
     # Read the image data

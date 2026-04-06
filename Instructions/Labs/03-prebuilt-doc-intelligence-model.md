@@ -130,7 +130,7 @@ Now you're ready to use the SDK to evaluate the pdf file.
 
     The file is opened in a code editor.
 
-1. In the code file, find the comment **Import the required libraries** and add the following code:
+1. In the code file, find the comment **Add references** and add the following code:
 
     ```python
    # Add references
@@ -156,7 +156,7 @@ Now you're ready to use the SDK to evaluate the pdf file.
    )
     ```
 
-1. Find the comment **Display invoice information to the user**and add the following code:
+1. Find the comment **Display invoice information to the user** and add the following code:
 
     ```python
    # Display invoice information to the user

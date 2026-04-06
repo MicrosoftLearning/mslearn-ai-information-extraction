@@ -92,7 +92,7 @@ This is the sample invoice that your code will analyze:
 
     ```python
     # Add references
-    from azure.core.credentials import AzureKeyCredential
+    from azure.identity import DefaultAzureCredential
     from azure.ai.documentintelligence import DocumentIntelligenceClient
     from azure.ai.documentintelligence.models import AnalyzeDocumentRequest
     ```
@@ -102,7 +102,7 @@ This is the sample invoice that your code will analyze:
     ```python
     # Create the client
     document_analysis_client = DocumentIntelligenceClient(
-        endpoint=endpoint, credential=AzureKeyCredential(key)
+        endpoint=endpoint, credential=DefaultAzureCredential()
     )
     ```
 

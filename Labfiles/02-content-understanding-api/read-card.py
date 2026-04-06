@@ -3,7 +3,7 @@ import os
 import sys
 import json
 from azure.ai.contentunderstanding import ContentUnderstandingClient
-from azure.core.credentials import AzureKeyCredential
+from azure.identity import DefaultAzureCredential
 
 
 def main():
@@ -21,11 +21,10 @@ def main():
         # Get config settings
         load_dotenv()
         ai_svc_endpoint = os.getenv('ENDPOINT')
-        ai_svc_key = os.getenv('KEY')
         analyzer = os.getenv('ANALYZER_NAME')
 
         # Analyze the business card
-        analyze_card (image_file, analyzer, ai_svc_endpoint, ai_svc_key)
+        analyze_card (image_file, analyzer, ai_svc_endpoint)
 
         print("\n")
 
@@ -34,7 +33,7 @@ def main():
 
 
 
-def analyze_card (image_file, analyzer, endpoint, key):
+def analyze_card (image_file, analyzer, endpoint):
     
     # Use Content Understanding to analyze the image
 

@@ -1,4 +1,4 @@
-from azure.core.credentials import AzureKeyCredential
+from azure.identity import DefaultAzureCredential
 from azure.ai.documentintelligence import DocumentIntelligenceClient
 from azure.ai.documentintelligence.models import AnalyzeDocumentRequest
 from dotenv import load_dotenv
@@ -14,13 +14,12 @@ def main():
         # Get configuration settings 
         load_dotenv()
         endpoint = os.getenv("DOC_INTELLIGENCE_ENDPOINT")
-        key = os.getenv("DOC_INTELLIGENCE_KEY")
         model_id = os.getenv("MODEL_ID")
 
         formUrl = "https://github.com/MicrosoftLearning/mslearn-ai-information-extraction/blob/main/Labfiles/custom-doc-intelligence/test1.jpg?raw=true"
 
         document_analysis_client = DocumentIntelligenceClient(
-            endpoint=endpoint, credential=AzureKeyCredential(key)
+            endpoint=endpoint, credential=DefaultAzureCredential()
         )
 
         # Make sure your document's type is included in the list of document types the custom model can analyze

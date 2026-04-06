@@ -110,7 +110,8 @@ You'll use the sample forms such as this one to train a test a model:
 
 Now you will train the model using the files uploaded to the storage account.
 
-1. Open a new browser tab, and navigate to the Document Intelligence Studio at `https://documentintelligence.ai.azure.com/studio`. 
+1. Open a new browser tab, and navigate to the Content Understanding Studio at `https://contentunderstanding.ai.azure.com/`. 
+1. Click on the button **Start with Document Intelligence** to enter in the Document Intelligence Studio.
 1. Scroll down to the **Custom models** section and select the **Custom extraction model** tile.
 1. If prompted, sign in with your Azure credentials.
 1. If you are asked which Azure AI Document Intelligence resource to use, select the subscription and resource name you used when you created the Azure AI Document Intelligence resource.

@@ -14,8 +14,7 @@ def main():
         # Get config settings
         load_dotenv()
         endpoint = os.getenv('ENDPOINT')
-        key = os.getenv('KEY')
-
+        
 
         # Set analysis settings
         fileUri = "https://github.com/MicrosoftLearning/mslearn-ai-information-extraction/blob/main/Labfiles/prebuilt-doc-intelligence/sample-invoice/sample-invoice.pdf?raw=true"
