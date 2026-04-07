@@ -2,7 +2,7 @@ from dotenv import load_dotenv
 import os
 import json
 from azure.ai.contentunderstanding import ContentUnderstandingClient
-from azure.identity import DefaultAzureCredential
+from azure.core.credentials import AzureKeyCredential
 
 
 def main():
@@ -21,10 +21,11 @@ def main():
         # Get config settings
         load_dotenv()
         ai_svc_endpoint = os.getenv('ENDPOINT')
+        ai_svc_key = os.getenv('KEY')
         analyzer = os.getenv('ANALYZER_NAME')
 
         # Create the analyzer
-        create_analyzer (card_schema, analyzer, ai_svc_endpoint)
+        create_analyzer (card_schema, analyzer, ai_svc_endpoint, ai_svc_key)
 
         print("\n")
 
@@ -33,7 +34,7 @@ def main():
 
 
 
-def create_analyzer (schema, analyzer, endpoint):
+def create_analyzer (schema, analyzer, endpoint, key):
     
     # Create a Content Understanding analyzer
  

@@ -77,13 +77,65 @@ Now that you have the documents in place, you can create an indexer to use AI sk
     - Select **Extract text from images**, select the settings icon, ensure **Generate tags** and **Categorize content** are selected, and then select **Save**.
     - If it isn't already selected, choose the free Foundry Tools resource option, and then select **Next**.
 
-    > **Note**: The free Azure AI Services enrichment for Azure AI Search can be used to index a maximum of 20 documents. In a production solution, you should create and attach an Azure AI Services resource.
+1. In the Azure portal, browse to your Azure AI Search resource. On its **Overview** page, select **Import data**.
+1. On the **Connect to your data** page, in the **Data Source** list, select **Azure Blob Storage**. Then complete the data store details with the following values:
+    - **Data Source**: Azure Blob Storage
+    - **Data source name**: `margies-documents`
+    - **Data to extract**: Content and metadata
+    - **Parsing mode**: Default
+    - **Subscription**: *Your Azure subscription*
+    - **Connection string**:
+        - Select **Choose an existing connection**
+        - Select your storage account
+        - Select the **documents** container
+    - **Managed identity authentication**: None
+    - **Container name**: documents
+    - **Blob folder**: *Leave this blank*
+    - **Description**: `Travel brochures`
+1. Proceed to the next step (**Add cognitive skills**), which has three expandable sections.
+1. In the **Attach Azure AI Services** section, select **Free (limited enrichments)**\*.
 
-1. On **Preview mappings** set the following configuration:
-    - The fields are already mapped based on the options you selected in the previous step.
-    - Review the following fields and ensure that they're configured as shown in the following table. To update a field, select it and then select **Configure field**. Leave all other fields with their default settings.
+    > **Note**: \*The free Azure AI Services enrichment for Azure AI Search can be used to index a maximum of 20 documents. In a production solution, you should create and attach an Azure AI Services resource.
 
-    | Target index field name | Retrievable | Filterable | Sortable | Facetable | Searchable |
+1. In the **Add enrichments** section:
+    - Change the **Skillset name** to `margies-skillset`.
+    - Select the option **Enable OCR and merge all text into merged_content field**.
+    - Ensure that the **Source data field** is set to **merged_content**.
+    - Leave the **Enrichment granularity level** as **Source field**.
+    - Select the following enriched fields:
+
+        | Cognitive Skill | Parameter | Field name |
+        | --------------- | ---------- | ---------- |
+        | **Text Cognitive Skills** | |  |
+        | Extract people names | | people |
+        | Extract location names | | locations |
+        | Extract key phrases | | keyphrases |
+        | **Image Cognitive Skills** | |  |
+        | Generate tags from images | | imageTags |
+        | Generate captions from images | | imageCaption |
+
+        Double-check your selections (it can be difficult to change them later).
+
+1. In the **Save enrichments to a knowledge store** section:
+    - Select only the following checkboxes (an <font color="red">error</font> will appear — you'll resolve that shortly):
+        - **Azure file projections**:
+            - Image projections
+        - **Azure table projections**:
+            - Documents
+                - Key phrases
+        - **Azure blob projections**:
+            - Document
+    - Under **Storage account connection string** (beneath the <font color="red">error messages</font>):
+        - Select **Choose an existing connection**
+        - Select your storage account
+        - Select the **documents** container (*this is only required to set the storage account — you'll change the container name below!*)
+    - Change the **Container name** to `knowledge-store`.
+1. Proceed to the next step (**Customize target index**).
+1. Change the **Index name** to `margies-index`.
+1. Ensure that the **Key** is set to **metadata_storage_path**, leave the **Suggester name** blank, and ensure **Search mode** is **analyzingInfixMatching**.
+1. Make the following changes to the index fields, leaving all other fields with their default settings (**IMPORTANT**: you may need to scroll to the right to see the entire table):
+
+    | Field name | Retrievable | Filterable | Sortable | Facetable | Searchable |
     | ---------- | ----------- | ---------- | -------- | --------- | ---------- |
     | metadata_storage_size | &#10004; | &#10004; | &#10004; | | |
     | metadata_storage_last_modified | &#10004; | &#10004; | &#10004; | | |
@@ -122,8 +174,6 @@ Now that you have an index, you can search it.
     }
     ```
 
-1. The results include a **@odata.count** field at the top of the results that indicates the number of documents returned by the search.
-
 1. Modify the JSON request to include a **select** parameter:
 
     ```json
@@ -154,7 +204,7 @@ Now that you have an index, you can search it.
     {
         "search": "New York",
         "count": true,
-        "select": "title,keyPhrases",
+        "select": "metadata_storage_name,keyphrases",
         "filter": "metadata_storage_size lt 380000"
     }
     ```
