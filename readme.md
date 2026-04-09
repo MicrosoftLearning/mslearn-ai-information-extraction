@@ -1,3 +1,5 @@
+**This course was retired on 2026-3-31. Once course is retired, all GitHub repos will be removed. Thank you!**
+
 # AI-Powered Information Extraction
 <!-- Change the title above as appropriate -->
 
