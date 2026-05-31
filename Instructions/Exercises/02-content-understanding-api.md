@@ -84,7 +84,7 @@ You'll use Visual Studio Code as your development environment.
     ```
    python -m venv labenv
    labenv\Scripts\activate
-   pip install -r requirements.txt azure-ai-contentunderstanding
+   pip install -r requirements.txt
     ```
 
 1. In the VS Code Explorer pane, open the **.env** file in the **Labfiles/02-content-understanding-api** folder.
