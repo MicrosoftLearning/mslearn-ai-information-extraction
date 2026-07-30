@@ -7,13 +7,13 @@ import os
 def main():
 
     # Clear the console
-    os.system("cls" if os.name == "nt" else "clear")
+    os.system('cls' if os.name=='nt' else 'clear')
 
     try:
         # Get config settings
         load_dotenv()
-        endpoint = os.getenv("ENDPOINT")
-        key = os.getenv("KEY")
+        endpoint = os.getenv('ENDPOINT')
+        key = os.getenv('KEY')
 
         # Set analysis settings
         fileUri = "https://raw.githubusercontent.com/MicrosoftLearning/mslearn-ai-information-extraction/main/Labfiles/03-document-intelligence/prebuilt/sample-invoice/sample-invoice.pdf"
@@ -34,6 +34,5 @@ def main():
 
     print("\nAnalysis complete.\n")
 
-
 if __name__ == "__main__":
-    main()
+    main()        
