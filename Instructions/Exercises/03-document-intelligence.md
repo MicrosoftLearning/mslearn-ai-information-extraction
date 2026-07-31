@@ -88,7 +88,7 @@ This is the sample invoice that your code will analyze:
 
 1. In VS Code, open the **document-analysis.py** file.
 
-1. In the code file, find the comment **Import the required libraries** and add the following code:
+1. In the code file, find the comment **Add references** and add the following code:
 
     ```python
     # Add references
