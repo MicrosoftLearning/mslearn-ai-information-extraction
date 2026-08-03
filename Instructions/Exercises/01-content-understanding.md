@@ -2,9 +2,10 @@
 lab:
   title: Extract information from multimodal content
   description: Use Azure Content Understanding to extract insights from documents, images, audio recordings, and videos.
-  duration: 40 minutes
+  duration: 40
   level: 200
   islab: true
+  status: 'released'
   primarytopics:
     - Azure
     - Azure Content Understanding
@@ -63,7 +64,7 @@ Azure Content Understanding includes prebuilt **Read** and **Layout** analyzers 
 ### Use the Layout analyzer in the playground
 
 1. In the [Microsoft Foundry portal](https://ai.azure.com), make sure the **New Foundry** toggle is on.
-1. Select **Build** in the upper-right menu, then select **Models** in the left pane.
+1. Select **Build** in the upper-right menu, then select **Deployments** in the left pane.
 1. Select the **AI Services** tab to view the prebuilt models provided by Foundry Tools.
 1. Find and select **Azure Content Understanding - Layout**.
 

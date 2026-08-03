@@ -2,9 +2,8 @@
     "description": "Business card analyzer",
     "baseAnalyzerId": "prebuilt-document",
     "models": {
-      "completion": "gpt-4.1",
-      "embedding": "text-embedding-3-large"
-
+        "completion": "gpt-5.2",
+        "embedding": "text-embedding-3-large"
     },
     "config": {
         "returnDetails": true

@@ -2,9 +2,10 @@
 lab:
   title: Develop a Content Understanding client application
   description: Use the Azure Content Understanding Python SDK to create and use analyzers programmatically.
-  duration: 30 minutes
+  duration: 30
   level: 300
   islab: true
+  status: 'released'
   primarytopics:
     - Azure
     - Azure Content Understanding

@@ -2,9 +2,10 @@
 lab:
   title: Build an automated RAG ingestion pipeline with Content Understanding
   description: Use Azure Content Understanding, Azure AI Search, and Azure OpenAI to build a continuous multimodal RAG ingestion pipeline.
-  duration: 45 minutes
+  duration: 45
   level: 300
   islab: true
+  status: 'released'
   primarytopics:
     - Azure
     - Azure Content Understanding
@@ -77,7 +78,7 @@ You'll need the following values to configure the pipeline. Note them from the A
 - **Foundry endpoint**: From the parent resource tab you left open, copy the **Endpoint** from the **Overview** page (e.g., `https://<name>.services.ai.azure.com/`).
 - **Foundry API key**: From the same page, select **Resource Management** > **Keys and Endpoint** and copy one of the **Keys**.
 - **Azure AI Search endpoint**: From your AI Search resource's **Overview** page in the Azure portal (e.g., `https://<name>.search.windows.net`).
-- **Model deployments**: From the Foundry Home page, select **Build** > **Models** to view your deployed models. Note that there is a number at the end of your embedding model name, which you'll need to update in your `.env` file.
+- **Model deployments**: From the Foundry Home page, select **Build** > **Deployments** to view your deployed models. Note that there is a number at the end of your embedding model name, which you'll need to update in your `.env` file.
 - **Azure AI Search admin key**: From your AI Search resource's **Settings** > **Keys** page.
 
     > **Note**: The Foundry endpoint and key are used for both Content Understanding and Azure OpenAI, since both services are included in the same Foundry resource.

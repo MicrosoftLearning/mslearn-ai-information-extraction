@@ -2,9 +2,10 @@
 lab:
   title: Create a knowledge mining solution
   description: Use Azure AI Search to extract key information from documents and make it easier to search and analyze.
-  duration: 40 minutes
+  duration: 40
   level: 200
   islab: true
+  status: 'released'
   primarytopics:
     - Azure
 ---
@@ -55,8 +56,6 @@ Your knowledge mining solution will extract information from travel brochure doc
     - **Name**: `documents`
     - **Anonymous access level**: Private (no anonymous access)
 1. Select the **documents** container, and use the **Upload** toolbar button to upload the .pdf files you extracted from **documents.zip**.
-
-    ![TODO: New screenshot of the Azure storage browser with the documents container and its file contents.](./media/blob-containers.png)
 
 ## Create and run an indexer
 
