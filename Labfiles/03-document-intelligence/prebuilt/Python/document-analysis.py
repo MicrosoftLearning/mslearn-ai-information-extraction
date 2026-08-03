@@ -4,7 +4,6 @@ import os
 # Add references
 
 
-
 def main():
 
     # Clear the console
@@ -16,29 +15,19 @@ def main():
         endpoint = os.getenv('ENDPOINT')
         key = os.getenv('KEY')
 
-
         # Set analysis settings
-        fileUri = "https://github.com/MicrosoftLearning/mslearn-ai-information-extraction/blob/main/Labfiles/prebuilt-doc-intelligence/sample-invoice/sample-invoice.pdf?raw=true"
+        fileUri = "https://raw.githubusercontent.com/MicrosoftLearning/mslearn-ai-information-extraction/main/Labfiles/03-document-intelligence/prebuilt/sample-invoice/sample-invoice.pdf"
         fileLocale = "en-US"
         fileModelId = "prebuilt-invoice"
 
         print(f"\nConnecting to Forms Recognizer at: {endpoint}")
         print(f"Analyzing invoice at: {fileUri}")
 
-
         # Create the client
-
-
 
         # Analyse the invoice
 
-
-
         # Display invoice information to the user
-
-
-            
-
 
     except Exception as ex:
         print(ex)
