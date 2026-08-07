@@ -112,7 +112,7 @@ This is the sample invoice that your code will analyze:
     ```python
     # Analyze the invoice
     poller = document_analysis_client.begin_analyze_document(
-        "prebuilt-invoice",
+        fileModelId,
         AnalyzeDocumentRequest(url_source=fileUri),
         locale=fileLocale
     )
