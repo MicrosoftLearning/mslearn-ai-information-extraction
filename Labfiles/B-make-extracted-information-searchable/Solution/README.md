@@ -24,7 +24,7 @@ Labfiles/B-make-extracted-information-searchable/
   Solution/
     README.md              this file
   setup/
-    check_env.py           preflight check: python setup/check_env.py --task N
+    check_env.py           preflight check: python ../setup/check_env.py --task N
 ```
 
 ## How to run each task
@@ -45,7 +45,8 @@ pip install -r requirements.txt
 | Task 3 | `python rag-agent.py` | adds `CHAT_DEPLOYMENT_NAME` |
 | Task 4 | `python ingest-pipeline.py --watch` in one terminal, `python rag-agent.py` in another | same as Task 3 |
 
-Before starting a task, check you have what it needs (run from the `Python` folder):
+Before starting a task, check you have what it needs. Run this from the lab's
+`Python/` folder (this lab has only one — there is no `Solution/Python/`):
 
 ```
 python ../setup/check_env.py --task 2

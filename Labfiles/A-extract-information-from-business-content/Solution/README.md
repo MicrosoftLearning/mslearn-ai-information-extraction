@@ -20,7 +20,7 @@ Labfiles/A-extract-information-from-business-content/
     README.md                this file
     Python/                  COMPLETE reference implementation
   setup/
-    check_env.py             preflight check: python setup/check_env.py --task N
+    check_env.py             preflight check: python ../setup/check_env.py --task N
     upload-training-forms.sh Task 4 - uploads labeled training forms to storage
 ```
 
@@ -28,7 +28,8 @@ Task 1 is completed entirely in the browser, so it has no code.
 
 ## How to run each task
 
-All commands run from `Labfiles/A-extract-information-from-business-content/Python`
+All commands run from the **starter** folder,
+`Labfiles/A-extract-information-from-business-content/Python`,
 with the virtual environment activated:
 
 ```
@@ -44,7 +45,9 @@ pip install -r requirements.txt
 | Task 3 | `python document-analysis.py` | `DOC_INTELLIGENCE_ENDPOINT`, `DOC_INTELLIGENCE_KEY` |
 | Task 4 | `bash ../setup/upload-training-forms.sh`, train in Studio, then `python test-model.py` | `DOC_INTELLIGENCE_ENDPOINT`, `DOC_INTELLIGENCE_KEY`, `CUSTOM_MODEL_ID` |
 
-Before starting a task, check you have what it needs (run from the `Python` folder):
+Before starting a task, check you have what it needs. Run this from the
+**starter** `Python/` folder — *not* from `Solution/Python/`, where `../setup/`
+would resolve to a `Solution/setup/` folder that doesn't exist:
 
 ```
 python ../setup/check_env.py --task 2

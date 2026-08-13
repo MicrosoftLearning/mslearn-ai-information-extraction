@@ -3,9 +3,10 @@ Preflight check for the Fabrikam Logistics "Extract information from business
 content" lab (Lab A).
 
 Each task in this lab can be completed on its own. Before you start a task,
-run this script to confirm your .env file has everything that task needs:
+run this script from the starter `Python` folder (the one you edit during the
+lab - NOT `Solution/Python`) to confirm your .env has everything that task needs:
 
-    python setup/check_env.py --task 2
+    python ../setup/check_env.py --task 2
 
 It never changes anything - it only reads your .env and tells you what (if
 anything) is missing, so you can fix it before running the task.
