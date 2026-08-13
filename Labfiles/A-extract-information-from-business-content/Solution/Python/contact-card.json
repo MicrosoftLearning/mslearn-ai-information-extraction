@@ -1,0 +1,40 @@
+{
+    "description": "Fabrikam Logistics contact card analyzer",
+    "baseAnalyzerId": "prebuilt-document",
+    "models": {
+        "completion": "gpt-5.2",
+        "embedding": "text-embedding-3-large"
+    },
+    "config": {
+        "returnDetails": true
+    },
+    "fieldSchema": {
+        "fields": {
+            "Company": {
+                "type": "string",
+                "method": "extract",
+                "description": "Company or organization"
+            },
+            "Name": {
+                "type": "string",
+                "method": "extract",
+                "description": "Contact's name"
+            },
+            "Title": {
+                "type": "string",
+                "method": "extract",
+                "description": "Contact's job title"
+            },
+            "Email": {
+                "type": "string",
+                "method": "extract",
+                "description": "Contact's email address"
+            },
+            "Phone": {
+                "type": "string",
+                "method": "extract",
+                "description": "Contact's phone number"
+            }
+        }
+    }
+}
