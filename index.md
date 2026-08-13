@@ -12,9 +12,14 @@ The following exercises are designed to provide you with a hands-on learning exp
 
 <hr>
 
+{% comment %}
+  Only list pages that aren't drafts. A page opts out by setting `status: 'draft'`
+  in its `lab:` front matter; a page with no `status` field is treated as
+  publishable, so existing exercises are unaffected.
+{% endcomment %}
 {% assign labs = site.pages | where_exp:"page", "page.url contains '/Instructions/Exercises'" %}
 {% for activity in labs  %}
-{% if activity.lab.title %}
+{% if activity.lab.title and activity.lab.status != 'draft' %}
 
 ### [{{ activity.lab.title }}]({{ site.github.url }}{{ activity.url }})
 
