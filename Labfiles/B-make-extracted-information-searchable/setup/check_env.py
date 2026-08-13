@@ -43,6 +43,8 @@ except ImportError:
                     if line.startswith("export "):
                         line = line[len("export "):].lstrip()
                     if "=" not in line:
+                        # python-dotenv records a bare key with no '=' as None.
+                        values[line] = None
                         continue
                     key, _, value = line.partition("=")
                     key = key.strip()
