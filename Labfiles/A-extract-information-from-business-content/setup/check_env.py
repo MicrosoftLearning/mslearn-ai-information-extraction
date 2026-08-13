@@ -24,7 +24,38 @@ import argparse
 import os
 from pathlib import Path
 
-from dotenv import dotenv_values
+try:
+    from dotenv import dotenv_values
+except ImportError:
+    # python-dotenv is installed into the lab's virtual environment, but this
+    # preflight check is meant to run BEFORE 'pip install -r requirements.txt'
+    # (and Task 1 is portal-only, so that install may never happen). Fall back
+    # to a small standard-library parser so the check always works.
+    def dotenv_values(path):
+        """Minimal .env reader used when python-dotenv isn't installed."""
+        values = {}
+        try:
+            with open(path, "r", encoding="utf-8-sig") as handle:
+                for raw_line in handle:
+                    line = raw_line.strip()
+                    if not line or line.startswith("#"):
+                        continue
+                    if line.startswith("export "):
+                        line = line[len("export "):].lstrip()
+                    if "=" not in line:
+                        continue
+                    key, _, value = line.partition("=")
+                    key = key.strip()
+                    value = value.strip()
+                    if len(value) >= 2 and value[0] == value[-1] and value[0] in ("'", '"'):
+                        value = value[1:-1]
+                    else:
+                        value = value.split(" #", 1)[0].strip()
+                    if key:
+                        values[key] = value
+        except OSError:
+            return {}
+        return values
 
 # Which .env keys each task needs to run on its own.
 TASK_REQUIREMENTS = {
