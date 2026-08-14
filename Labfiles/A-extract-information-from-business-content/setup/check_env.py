@@ -24,40 +24,58 @@ import argparse
 import os
 from pathlib import Path
 
+def _parse_env_file(path):
+    """Minimal .env reader used when python-dotenv isn't installed.
+
+    Defined at module level (rather than inside the ImportError branch below)
+    so it can be imported and tested directly even when python-dotenv is
+    available. Its output matches dotenv.dotenv_values for the .env syntax
+    these labs use.
+    """
+    values = {}
+    try:
+        with open(path, "r", encoding="utf-8-sig") as handle:
+            for raw_line in handle:
+                line = raw_line.strip()
+                if not line or line.startswith("#"):
+                    continue
+                # Strip 'export ' before splitting, so the key is the real
+                # name and not 'export KEY'.
+                if line.startswith("export "):
+                    line = line[len("export "):].lstrip()
+                if "=" not in line:
+                    # python-dotenv records a bare key with no '=' as None.
+                    values[line] = None
+                    continue
+                key, _, value = line.partition("=")
+                key = key.strip()
+                value = value.strip()
+                if value[:1] in ("'", '"'):
+                    # Quoted: take what's inside the quotes, so a '#' inside
+                    # is kept and a trailing comment outside is dropped.
+                    quote = value[0]
+                    end = value.find(quote, 1)
+                    if end == -1:
+                        # Unterminated quote; python-dotenv drops the key.
+                        continue
+                    value = value[1:end]
+                else:
+                    value = value.split(" #", 1)[0].strip()
+                if key:
+                    values[key] = value
+    except OSError:
+        return {}
+    return values
+
+
 try:
-    from dotenv import dotenv_values
-except ImportError:
     # python-dotenv is installed into the lab's virtual environment, but this
     # preflight check is meant to run BEFORE 'pip install -r requirements.txt'
-    # (and Task 1 is portal-only, so that install may never happen). Fall back
-    # to a small standard-library parser so the check always works.
-    def dotenv_values(path):
-        """Minimal .env reader used when python-dotenv isn't installed."""
-        values = {}
-        try:
-            with open(path, "r", encoding="utf-8-sig") as handle:
-                for raw_line in handle:
-                    line = raw_line.strip()
-                    if not line or line.startswith("#"):
-                        continue
-                    if line.startswith("export "):
-                        line = line[len("export "):].lstrip()
-                    if "=" not in line:
-                        # python-dotenv records a bare key with no '=' as None.
-                        values[line] = None
-                        continue
-                    key, _, value = line.partition("=")
-                    key = key.strip()
-                    value = value.strip()
-                    if len(value) >= 2 and value[0] == value[-1] and value[0] in ("'", '"'):
-                        value = value[1:-1]
-                    else:
-                        value = value.split(" #", 1)[0].strip()
-                    if key:
-                        values[key] = value
-        except OSError:
-            return {}
-        return values
+    # (and Task 1 is portal-only, so that install may never happen), so fall
+    # back to the stdlib parser above when it isn't importable.
+    from dotenv import dotenv_values
+except ImportError:
+    dotenv_values = _parse_env_file
 
 # Which .env keys each task needs to run on its own.
 TASK_REQUIREMENTS = {
