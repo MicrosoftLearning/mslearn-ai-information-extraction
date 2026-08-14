@@ -168,6 +168,17 @@ def _parse_env_file(path):
     available. Its output matches dotenv.dotenv_values, including the awkward
     cases, because this check has to agree with what the app will actually
     see at runtime - the app reads the same file with python-dotenv.
+
+    INTENTIONAL DIVERGENCE - do not "fix" this to match dotenv:
+        This reads with utf-8-sig, so a UTF-8 BOM is stripped and the first
+        key parses under its real name. python-dotenv does NOT do that - it
+        returns the first key as "\\ufeffNAME". The difference is deliberate:
+        it lets the per-key report stay readable, and the BOM is caught
+        separately by _has_utf8_bom(), which forces the check to fail with an
+        explanation. Removing the strip to gain byte-parity with dotenv would
+        make the per-key output confusing without adding any safety, because
+        the safety lives in the detector, not in the parser. A parser-level
+        differential test cannot see this - assert it at check level instead.
     """
     try:
         with open(path, "r", encoding="utf-8-sig") as handle:
@@ -377,10 +388,49 @@ def load_values(env_path):
     return values
 
 
+def _placeholder_values():
+    """PLACEHOLDERS plus any placeholder-looking value in the shipped
+    .env.example, so the list can't silently rot when the example is edited.
+
+    Only values that *look* like placeholders are absorbed. .env.example also
+    ships real pre-filled values - an analyzer id, an index name, model names -
+    that a learner is meant to keep. Absorbing those would report a correctly
+    configured .env as MISSING, so the behavioural assertion to test is
+    "an unedited copy of .env.example is not ready", never "every value in
+    .env.example is a placeholder".
+    """
+    values = set(PLACEHOLDERS)
+    example = Path(__file__).resolve().parent.parent / "Python" / ".env.example"
+    try:
+        with open(example, "r", encoding="utf-8-sig") as handle:
+            for line in handle:
+                line = line.strip()
+                if not line or line.startswith("#") or "=" not in line:
+                    continue
+                value = line.partition("=")[2].strip()
+                lowered = value.lower()
+                if lowered.startswith("your_") or lowered.startswith("your-"):
+                    values.add(value)
+    except OSError:
+        pass
+    return values
+
+
+_PLACEHOLDER_CACHE = None
+
+
+def _all_placeholders():
+    """Cached placeholder set (PLACEHOLDERS unioned with the example file)."""
+    global _PLACEHOLDER_CACHE
+    if _PLACEHOLDER_CACHE is None:
+        _PLACEHOLDER_CACHE = _placeholder_values()
+    return _PLACEHOLDER_CACHE
+
+
 def is_set(values, key):
     """A key counts as set if it's present and not a leftover placeholder."""
     value = (values.get(key) or "").strip()
-    return bool(value) and value not in PLACEHOLDERS
+    return bool(value) and value not in _all_placeholders()
 
 
 def main():
