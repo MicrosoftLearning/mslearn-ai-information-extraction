@@ -24,13 +24,22 @@ import argparse
 import os
 from pathlib import Path
 
+_ESCAPES = {"n": "\n", "r": "\r", "t": "\t", "\\": "\\", '"': '"', "'": "'"}
+
+
 def _parse_env_file(path):
     """Minimal .env reader used when python-dotenv isn't installed.
 
     Defined at module level (rather than inside the ImportError branch below)
     so it can be imported and tested directly even when python-dotenv is
-    available. Its output matches dotenv.dotenv_values for the .env syntax
-    these labs use.
+    available. Its output matches dotenv.dotenv_values for every well-formed
+    .env construct these labs use.
+
+    One intentional deviation: python-dotenv treats an unterminated quote as
+    the start of a multi-line value, so it swallows the following lines and
+    the keys defined on them silently disappear. This parser instead drops
+    only the malformed line and keeps every later key, so a typo in one value
+    can't make unrelated settings look MISSING.
     """
     values = {}
     try:
@@ -51,14 +60,29 @@ def _parse_env_file(path):
                 key = key.strip()
                 value = value.strip()
                 if value[:1] in ("'", '"'):
-                    # Quoted: take what's inside the quotes, so a '#' inside
-                    # is kept and a trailing comment outside is dropped.
                     quote = value[0]
-                    end = value.find(quote, 1)
-                    if end == -1:
+                    chars = []
+                    index = 1
+                    closed = False
+                    while index < len(value):
+                        char = value[index]
+                        # Only double quotes process backslash escapes, so a
+                        # \" doesn't end the value and \n becomes a newline.
+                        if quote == '"' and char == "\\" and index + 1 < len(value):
+                            nxt = value[index + 1]
+                            chars.append(_ESCAPES.get(nxt, "\\" + nxt))
+                            index += 2
+                            continue
+                        if char == quote:
+                            closed = True
+                            break
+                        chars.append(char)
+                        index += 1
+                    if not closed:
                         # Unterminated quote; python-dotenv drops the key.
                         continue
-                    value = value[1:end]
+                    # Anything after the closing quote is a trailing comment.
+                    value = "".join(chars)
                 else:
                     value = value.split(" #", 1)[0].strip()
                 if key:
