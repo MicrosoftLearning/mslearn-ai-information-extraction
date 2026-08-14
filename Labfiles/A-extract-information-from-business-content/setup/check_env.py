@@ -27,68 +27,157 @@ from pathlib import Path
 _ESCAPES = {"n": "\n", "r": "\r", "t": "\t", "\\": "\\", '"': '"', "'": "'"}
 
 
+def _has_utf8_bom(path):
+    """True if the file starts with a UTF-8 BOM.
+
+    Checked on the raw bytes, so the result is the same whether python-dotenv
+    or the fallback parser below did the reading.
+    """
+    try:
+        with open(path, "rb") as handle:
+            return handle.read(3) == b"\xef\xbb\xbf"
+    except OSError:
+        return False
+
+
+BOM_HINT = (
+    "Your .env was saved as 'UTF-8 with BOM' (Notepad does this by default). "
+    "The BOM becomes part of the first setting's name, so the app reads that "
+    "setting as empty even though the file looks correct. Re-save as plain "
+    "UTF-8: in VS Code, click the encoding in the status bar, choose 'Save "
+    "with Encoding', then 'UTF-8' (not 'UTF-8 with BOM')."
+)
+
+
+def _find_unterminated_quote(path):
+    """Return the 1-based line number of the first unterminated quoted value.
+
+    Read from the raw file, so the answer is the same whether python-dotenv or
+    the fallback parser did the reading. An unterminated quote is why a set of
+    otherwise-correct settings can vanish: python-dotenv keeps scanning for the
+    closing quote and swallows the lines it crosses, so the app never sees them.
+    """
+    try:
+        with open(path, "r", encoding="utf-8-sig") as handle:
+            for number, raw_line in enumerate(handle, start=1):
+                line = raw_line.strip()
+                if not line or line.startswith("#"):
+                    continue
+                if line.startswith("export "):
+                    line = line[len("export "):].lstrip()
+                if "=" not in line:
+                    continue
+                _, _, value = line.partition("=")
+                value = value.strip()
+                if value[:1] not in ("'", '"'):
+                    continue
+                quote = value[0]
+                index = 1
+                closed = False
+                while index < len(value):
+                    char = value[index]
+                    if quote == '"' and char == "\\" and index + 1 < len(value):
+                        index += 2
+                        continue
+                    if char == quote:
+                        closed = True
+                        break
+                    index += 1
+                if not closed:
+                    return number
+    except OSError:
+        return None
+    return None
+
+
+def _unterminated_hint(line_number):
+    return (
+        f"Line {line_number} of your .env opens a quote that is never closed. "
+        "python-dotenv keeps looking for the closing quote on the lines that "
+        "follow, so that setting - and potentially every setting after it - is "
+        f"read as one long value and never reaches the app. Close the quote on "
+        f"line {line_number} (or remove both quotes; these settings don't need "
+        "them)."
+    )
+
+
 def _parse_env_file(path):
     """Minimal .env reader used when python-dotenv isn't installed.
 
     Defined at module level (rather than inside the ImportError branch below)
     so it can be imported and tested directly even when python-dotenv is
-    available. Its output matches dotenv.dotenv_values for every well-formed
-    .env construct these labs use.
-
-    One intentional deviation: python-dotenv treats an unterminated quote as
-    the start of a multi-line value, so it swallows the following lines and
-    the keys defined on them silently disappear. This parser instead drops
-    only the malformed line and keeps every later key, so a typo in one value
-    can't make unrelated settings look MISSING.
+    available. Its output matches dotenv.dotenv_values, including the awkward
+    cases, because this check has to agree with what the app will actually
+    see at runtime - the app reads the same file with python-dotenv.
     """
-    values = {}
     try:
         with open(path, "r", encoding="utf-8-sig") as handle:
-            for raw_line in handle:
-                line = raw_line.strip()
-                if not line or line.startswith("#"):
-                    continue
-                # Strip 'export ' before splitting, so the key is the real
-                # name and not 'export KEY'.
-                if line.startswith("export "):
-                    line = line[len("export "):].lstrip()
-                if "=" not in line:
-                    # python-dotenv records a bare key with no '=' as None.
-                    values[line] = None
-                    continue
-                key, _, value = line.partition("=")
-                key = key.strip()
-                value = value.strip()
-                if value[:1] in ("'", '"'):
-                    quote = value[0]
-                    chars = []
-                    index = 1
-                    closed = False
-                    while index < len(value):
-                        char = value[index]
-                        # Only double quotes process backslash escapes, so a
-                        # \" doesn't end the value and \n becomes a newline.
-                        if quote == '"' and char == "\\" and index + 1 < len(value):
-                            nxt = value[index + 1]
-                            chars.append(_ESCAPES.get(nxt, "\\" + nxt))
-                            index += 2
-                            continue
-                        if char == quote:
-                            closed = True
-                            break
-                        chars.append(char)
-                        index += 1
-                    if not closed:
-                        # Unterminated quote; python-dotenv drops the key.
-                        continue
-                    # Anything after the closing quote is a trailing comment.
-                    value = "".join(chars)
-                else:
-                    value = value.split(" #", 1)[0].strip()
-                if key:
-                    values[key] = value
+            lines = handle.readlines()
     except OSError:
         return {}
+
+    values = {}
+    position = 0
+    while position < len(lines):
+        line = lines[position].strip()
+        position += 1
+
+        if not line or line.startswith("#"):
+            continue
+        # Strip 'export ' before splitting, so the key is the real name and
+        # not 'export KEY'.
+        if line.startswith("export "):
+            line = line[len("export "):].lstrip()
+        if "=" not in line:
+            # python-dotenv records a bare key with no '=' as None.
+            values[line] = None
+            continue
+
+        key, _, value = line.partition("=")
+        key = key.strip()
+        value = value.strip()
+
+        if value[:1] in ("'", '"'):
+            quote = value[0]
+            chars = []
+            index = 1
+            closed = False
+            while index < len(value):
+                char = value[index]
+                # Only double quotes process backslash escapes, so a \" does
+                # not end the value and \n becomes a real newline. Decoding
+                # happens in this single pass so an escaped backslash isn't
+                # re-processed.
+                if quote == '"' and char == "\\" and index + 1 < len(value):
+                    chars.append(_ESCAPES.get(value[index + 1], "\\" + value[index + 1]))
+                    index += 2
+                    continue
+                if char == quote:
+                    closed = True
+                    break
+                chars.append(char)
+                index += 1
+
+            if not closed:
+                # python-dotenv treats this as the start of a multi-line
+                # value and scans ahead for the matching quote. If it finds
+                # one, every line up to it is swallowed and the keys on those
+                # lines never reach the app; if it doesn't, only this line is
+                # dropped. Either way the malformed entry itself is discarded.
+                lookahead = position
+                while lookahead < len(lines) and quote not in lines[lookahead]:
+                    lookahead += 1
+                if lookahead < len(lines):
+                    position = lookahead + 1
+                continue
+
+            value = "".join(chars)
+        else:
+            value = value.split(" #", 1)[0].strip()
+
+        if key:
+            values[key] = value
+
     return values
 
 
@@ -183,7 +272,13 @@ def load_values(env_path):
     """Merge real environment variables over .env file values (env wins)."""
     values = {}
     if env_path.exists():
-        values.update({k: v for k, v in dotenv_values(env_path).items() if v is not None})
+        for key, value in dotenv_values(env_path).items():
+            if value is None:
+                continue
+            # A UTF-8 BOM ends up glued to the first key's name. Strip it here
+            # so the per-key report is still readable; the BOM itself is
+            # reported separately as a problem, never silently accepted.
+            values[key.lstrip("\ufeff")] = value
     for key in ALL_KEYS:
         if os.environ.get(key):
             values[key] = os.environ[key]
@@ -212,6 +307,8 @@ def main():
     env_path = find_env_file()
     values = load_values(env_path)
     required = TASK_REQUIREMENTS[args.task]
+    has_bom = env_path.exists() and _has_utf8_bom(env_path)
+    bad_quote_line = _find_unterminated_quote(env_path) if env_path.exists() else None
 
     print(f"Checking readiness for Task {args.task}")
     print(f"Reading: {env_path}{'' if env_path.exists() else '  (not found yet)'}")
@@ -229,13 +326,25 @@ def main():
         mark = "OK " if is_set(values, key) else "MISSING"
         print(f"  [{mark}] {key}")
 
-    if not missing:
+    # These two break the app even when the keys look right, so neither is
+    # ever treated as "ready" - the app would fail after this said OK. They're
+    # also usually the root cause of the MISSING keys listed above.
+    if has_bom:
+        print("  [PROBLEM] .env starts with a UTF-8 BOM")
+    if bad_quote_line:
+        print(f"  [PROBLEM] .env line {bad_quote_line}: unterminated quote")
+
+    if not missing and not has_bom and not bad_quote_line:
         print()
         print(f"You're ready to start Task {args.task}.")
         return 0
 
     print()
-    print("Set the following before starting this task:")
+    print("Fix the following before starting this task:")
+    if has_bom:
+        print(f"\n  .env encoding\n    {BOM_HINT}")
+    if bad_quote_line:
+        print(f"\n  .env line {bad_quote_line}\n    {_unterminated_hint(bad_quote_line)}")
     for key in missing:
         print(f"\n  {key}\n    {FIX_HINTS.get(key, 'Add this key to your .env file.')}")
     return 1
