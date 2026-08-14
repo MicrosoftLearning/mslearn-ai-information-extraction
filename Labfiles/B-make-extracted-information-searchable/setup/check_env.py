@@ -125,6 +125,29 @@ def _unterminated_hint(line_number, eaten):
     )
 
 
+def _find_closing_line(lines, start, quote, honor_escapes):
+    """Index of the first line at/after `start` containing an unescaped quote.
+
+    Returns None if there isn't one. Note that while recovering from an
+    unterminated value python-dotenv honours backslash escapes for BOTH quote
+    characters, even though single-quoted values are otherwise literal.
+    """
+    index = start
+    while index < len(lines):
+        line = lines[index]
+        position = 0
+        while position < len(line):
+            char = line[position]
+            if honor_escapes and char == "\\" and position + 1 < len(line):
+                position += 2
+                continue
+            if char == quote:
+                return index
+            position += 1
+        index += 1
+    return None
+
+
 def _parse_env_file(path):
     """Minimal .env reader used when python-dotenv isn't installed.
 
@@ -184,14 +207,16 @@ def _parse_env_file(path):
 
             if not closed:
                 # python-dotenv treats this as the start of a multi-line
-                # value and scans ahead for the matching quote. If it finds
-                # one, every line up to it is swallowed and the keys on those
-                # lines never reach the app; if it doesn't, only this line is
-                # dropped. Either way the malformed entry itself is discarded.
-                lookahead = position
-                while lookahead < len(lines) and quote not in lines[lookahead]:
-                    lookahead += 1
-                if lookahead < len(lines):
+                # value and scans ahead for the matching quote. It is
+                # escape-aware while doing so, but if no escaped-quote-aware
+                # close exists anywhere it retries treating every quote
+                # character literally - so an escaped quote can still end the
+                # recovery when it's the only candidate. Neither pass alone
+                # reproduces both behaviours.
+                lookahead = _find_closing_line(lines, position, quote, True)
+                if lookahead is None:
+                    lookahead = _find_closing_line(lines, position, quote, False)
+                if lookahead is not None:
                     position = lookahead + 1
                 continue
 
