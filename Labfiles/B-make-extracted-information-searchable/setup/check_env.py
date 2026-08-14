@@ -26,10 +26,14 @@ import os
 from pathlib import Path
 
 # Escape sequences a quoted value decodes. Double quotes decode the full
-# set; single quotes decode only the delimiter and the backslash itself -
-# everything else stays literal. Measured against python-dotenv, not
+# C-style set; single quotes decode only the delimiter and the backslash
+# itself - everything else stays literal. Measured against python-dotenv, not
 # assumed: 'raw \n stays' keeps the backslash, but 'a\'b' yields a'b.
-_ESCAPES_DOUBLE = {"n": "\n", "r": "\r", "t": "\t", "\\": "\\", '"': '"', "'": "'"}
+_ESCAPES_DOUBLE = {
+    "n": "\n", "r": "\r", "t": "\t",
+    "a": "\a", "b": "\b", "f": "\f", "v": "\v",
+    "\\": "\\", '"': '"', "'": "'",
+}
 _ESCAPES_SINGLE = {"\\": "\\", "'": "'"}
 
 # Kept for callers/tests that reference the original name.
