@@ -25,7 +25,15 @@ import argparse
 import os
 from pathlib import Path
 
-_ESCAPES = {"n": "\n", "r": "\r", "t": "\t", "\\": "\\", '"': '"', "'": "'"}
+# Escape sequences a quoted value decodes. Double quotes decode the full
+# set; single quotes decode only the delimiter and the backslash itself -
+# everything else stays literal. Measured against python-dotenv, not
+# assumed: 'raw \n stays' keeps the backslash, but 'a\'b' yields a'b.
+_ESCAPES_DOUBLE = {"n": "\n", "r": "\r", "t": "\t", "\\": "\\", '"': '"', "'": "'"}
+_ESCAPES_SINGLE = {"\\": "\\", "'": "'"}
+
+# Kept for callers/tests that reference the original name.
+_ESCAPES = _ESCAPES_DOUBLE
 
 
 def _has_utf8_bom(path):
@@ -186,17 +194,21 @@ def _parse_env_file(path):
 
         if value[:1] in ("'", '"'):
             quote = value[0]
+            escapes = _ESCAPES_DOUBLE if quote == '"' else _ESCAPES_SINGLE
             chars = []
             index = 1
             closed = False
             while index < len(value):
                 char = value[index]
-                # Only double quotes process backslash escapes, so a \" does
-                # not end the value and \n becomes a real newline. Decoding
-                # happens in this single pass so an escaped backslash isn't
-                # re-processed.
-                if quote == '"' and char == "\\" and index + 1 < len(value):
-                    chars.append(_ESCAPES.get(value[index + 1], "\\" + value[index + 1]))
+                # Both quote styles honour a backslash escape, but they decode
+                # different sets: a \" does not end a double-quoted value and
+                # \n becomes a newline, while a single-quoted value decodes
+                # only \' and \\ and leaves every other escape literal.
+                # Decoding happens in this single pass so an escaped backslash
+                # isn't re-processed.
+                if char == "\\" and index + 1 < len(value):
+                    nxt = value[index + 1]
+                    chars.append(escapes.get(nxt, "\\" + nxt))
                     index += 2
                     continue
                 if char == quote:
