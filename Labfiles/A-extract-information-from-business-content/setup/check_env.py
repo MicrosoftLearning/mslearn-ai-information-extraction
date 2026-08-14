@@ -90,14 +90,37 @@ def _find_unterminated_quote(path):
     return None
 
 
-def _unterminated_hint(line_number):
+def _keys_written_in_file(path):
+    """Return the key names that physically appear as assignments in the file.
+
+    Used to tell a key that was never written from one that IS written but got
+    eaten by a malformation, so the check can report the difference honestly.
+    """
+    written = set()
+    try:
+        with open(path, "r", encoding="utf-8-sig") as handle:
+            for raw_line in handle:
+                line = raw_line.strip().lstrip("\ufeff")
+                if not line or line.startswith("#"):
+                    continue
+                if line.startswith("export "):
+                    line = line[len("export "):].lstrip()
+                if "=" not in line:
+                    continue
+                written.add(line.partition("=")[0].strip())
+    except OSError:
+        return written
+    return written
+
+
+def _unterminated_hint(line_number, eaten):
+    keys = ", ".join(eaten)
     return (
         f"Line {line_number} of your .env opens a quote that is never closed. "
         "python-dotenv keeps looking for the closing quote on the lines that "
-        "follow, so that setting - and potentially every setting after it - is "
-        f"read as one long value and never reaches the app. Close the quote on "
-        f"line {line_number} (or remove both quotes; these settings don't need "
-        "them)."
+        f"follow, so {keys} is in your file but never reaches the app. Close "
+        f"the quote on line {line_number} (or remove both quotes; these "
+        "settings don't need them)."
     )
 
 
@@ -321,20 +344,29 @@ def main():
         return 0
 
     missing = [key for key in required if not is_set(values, key)]
+    # A key that's written in the file but absent from the parsed result was
+    # eaten by the malformation - that's the difference between "you never set
+    # this" and "you set this and it isn't reaching the app".
+    written = _keys_written_in_file(env_path) if env_path.exists() else set()
+    eaten = [key for key in required if key in written and key not in values]
 
     for key in required:
         mark = "OK " if is_set(values, key) else "MISSING"
         print(f"  [{mark}] {key}")
 
-    # These two break the app even when the keys look right, so neither is
-    # ever treated as "ready" - the app would fail after this said OK. They're
-    # also usually the root cause of the MISSING keys listed above.
+    # A BOM always corrupts the first setting, so it's always fatal. An
+    # unterminated quote is only fatal when it actually ate something this
+    # task needs - a stray quote below the keys in use changes nothing, and
+    # failing the check for it would be its own false alarm.
     if has_bom:
         print("  [PROBLEM] .env starts with a UTF-8 BOM")
-    if bad_quote_line:
+    if bad_quote_line and eaten:
         print(f"  [PROBLEM] .env line {bad_quote_line}: unterminated quote")
+    elif bad_quote_line:
+        print(f"  [NOTE] .env line {bad_quote_line}: unterminated quote "
+              f"(nothing this task needs is affected)")
 
-    if not missing and not has_bom and not bad_quote_line:
+    if not missing and not has_bom:
         print()
         print(f"You're ready to start Task {args.task}.")
         return 0
@@ -343,9 +375,12 @@ def main():
     print("Fix the following before starting this task:")
     if has_bom:
         print(f"\n  .env encoding\n    {BOM_HINT}")
-    if bad_quote_line:
-        print(f"\n  .env line {bad_quote_line}\n    {_unterminated_hint(bad_quote_line)}")
+    if bad_quote_line and eaten:
+        print(f"\n  .env line {bad_quote_line}\n"
+              f"    {_unterminated_hint(bad_quote_line, eaten)}")
     for key in missing:
+        if key in eaten:
+            continue  # already explained by the unterminated-quote note above
         print(f"\n  {key}\n    {FIX_HINTS.get(key, 'Add this key to your .env file.')}")
     return 1
 
