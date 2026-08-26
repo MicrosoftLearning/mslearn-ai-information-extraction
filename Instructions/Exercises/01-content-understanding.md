@@ -64,9 +64,9 @@ Azure Content Understanding includes prebuilt **Read** and **Layout** analyzers 
 ### Use the Layout analyzer in the playground
 
 1. In the [Microsoft Foundry portal](https://ai.azure.com), make sure the **New Foundry** toggle is on.
-1. Select **Build** in the upper-right menu, then select **Deployments** in the left pane.
-1. Select the **AI Services** tab to view the prebuilt models provided by Foundry Tools.
-1. Find and select **Azure Content Understanding - Layout**.
+1. Select **Build** in the upper-right menu, then select **Services** in the left pane.
+1. Ensure the **Playgrounds** tab is selected to view the prebuilt models provided by Foundry Tools.
+1. Find and select **Content Understanding - Document Layout Analyzer**.
 
     This opens the Layout analyzer playground page, where you can test the layout model on sample data or your own files.
 
@@ -77,9 +77,9 @@ Azure Content Understanding includes prebuilt **Read** and **Layout** analyzers 
 1. Run the analyzer and wait for analysis to complete.
 1. Review the results. You can view the extracted content either as formatted output or as raw JSON data. Notice that the Layout analyzer extracts text, tables, and structural elements such as paragraphs and sections from the document.
 
-    > **Note**: The prebuilt **Read** and **Layout** analyzers extract content from documents without requiring a generative AI model. **Read** extracts text elements (words, paragraphs, formulas, and barcodes), while **Layout** additionally extracts tables, figures, document structure, hyperlinks, and annotations. These analyzers are useful for general-purpose content extraction, but they don't extract specific custom fields such as invoice amounts or vendor names.
+    > **Note**: The prebuilt **OCR/Read** and **Layout** analyzers extract content from documents without requiring a generative AI model. **OCR/Read** extracts text elements (words, paragraphs, formulas, and barcodes), while **Layout** additionally extracts tables, figures, document structure, hyperlinks, and annotations. These analyzers are useful for general-purpose content extraction, but they don't extract specific custom fields such as invoice amounts or vendor names.
 
-1. Optionally, go back to the **AI Services** tab and try **Azure Content Understanding - Read** with the same file to compare the results. Notice that Read extracts text without layout analysis.
+1. Optionally, go back to the **Services** tab and try **Azure Content Understanding - OCR/Read** with the same file to compare the results. Notice that Read extracts text without layout analysis.
 
 ## Set up Content Understanding Studio for custom analyzers
 
