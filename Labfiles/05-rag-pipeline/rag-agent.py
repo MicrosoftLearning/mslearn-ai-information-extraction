@@ -120,8 +120,8 @@ def generate_answer(question, context, openai_client, chat_deployment):
             {"role": "system", "content": system_message},
             {"role": "user", "content": question}
         ],
-        temperature=0.3,
-        max_tokens=800
+        temperature=1,
+        max_completion_tokens=800
     )
 
     return response.choices[0].message.content
