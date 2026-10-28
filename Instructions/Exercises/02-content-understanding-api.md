@@ -58,7 +58,10 @@ Content Understanding uses OpenAI models for analysis that are deployed in your 
 1. Select the settings gear icon on the top navigation bar, and select **+ Add resource**.
 1. Select your subscription and resource group where you created your Foundry resource, then select your Foundry resource name from the dropdown. This resource is the parent resource to the project you previously created.
 1. Ensure the **Enable auto-deployment** box is checked, then select **Next** and **Save** to create the configuration.
-1. Wait while it deploys the required models for Content Understanding.
+1. Wait for the resource configuration and automatic deployment to complete.
+1. In Content Understanding Studio settings, review the configuration for your connected resource. Record the identifiers in the default deployment mappings for completion and embedding. You will use these to configure the analyzer definition later in this exercise.
+
+    > **Note**: The analyzer definition must reference identifiers with configured default deployment mappings in Content Understanding. Verify that both completion and embedding mappings are configured before continuing.
 
 ## Prepare the development environment
 
@@ -91,7 +94,7 @@ You'll use Visual Studio Code as your development environment.
 1. In the VS Code Explorer pane, open the **.env** file in the **Labfiles/02-content-understanding-api** folder.
 1. In the file, replace the **YOUR_ENDPOINT** and **YOUR_KEY** placeholders with your Microsoft Foundry resource endpoint and API key (copied from the portal tab you left open), and ensure that **ANALYZER_NAME** is set to `businesscardanalyzer`.
 
-    > **Tip**: You can also find the endpoint and keys in the [Azure portal](https://portal.azure.com) by navigating to your Microsoft Foundry resource and viewing **Resource Management** > **Keys and Endpoint**.
+    > **Tip**: Find the **resource endpoint** and a key from the same parent Microsoft Foundry resource in the [Azure portal](https://portal.azure.com) under **Resource Management** > **Keys and Endpoint**. Use these resource-level connection details rather than the project endpoint.
 
 1. Save the file (**CTRL+S**).
 
@@ -100,6 +103,10 @@ You'll use Visual Studio Code as your development environment.
 Now you'll use the Content Understanding Python SDK to create an analyzer that can extract information from images of business cards.
 
 1. In the VS Code Explorer pane, open the **biz-card.json** file and review its contents. This JSON defines an analyzer schema for a business card, specifying the fields to extract (Company, Name, Title, Email, Phone).
+
+1. In **biz-card.json**, replace **<completion_model_identifier>** and **<embedding_model_identifier>** with the corresponding identifiers in the Content Understanding default deployment mappings you recorded. Use the identifiers associated with the mappings, not the deployment names.
+
+1. Save **biz-card.json**.
 
 1. Open the **create-analyzer.py** file in VS Code.
 
